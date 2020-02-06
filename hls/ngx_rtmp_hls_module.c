@@ -1657,7 +1657,7 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
     /* playlist path */
 
     if (hacf->nested) {
-        p = ngx_cpymem(p, "/index.m3u8", sizeof("/index.m3u8") - 1);
+        p = ngx_cpymem(p, "/manifest.m3u8", sizeof("/manifest.m3u8") - 1);
     } else {
         p = ngx_cpymem(p, ".m3u8", sizeof(".m3u8") - 1);
     }

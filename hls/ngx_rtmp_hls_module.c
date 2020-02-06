@@ -1584,9 +1584,9 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
 
     *ngx_cpymem(ctx->name.data, v->name, ctx->name.len) = 0;
 
-    len = hacf->path.len + 1 + ctx->name.len + sizeof(".m3u8");
+    len = hacf->path.len + 1 + ctx->name.len + 1 +sizeof('manifest') + sizeof(".m3u8");
     if (hacf->nested) {
-        len += sizeof("/index") - 1;
+        len += sizeof("/manifest") - 1;
     }
 
     ctx->playlist.data = ngx_palloc(s->connection->pool, len);
@@ -1596,7 +1596,13 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
         *p++ = '/';
     }
 
-    p = ngx_cpymem(p, ctx->name.data, ctx->name.len);
+    p = ngx_cpymem(ctx->playlist.data, ctx->name.data, ctx->name.len);
+
+    if (p[-1] != '/') {
+        *p++ = '/';
+    }
+
+    p = ngx_cpymem(p, 'manifest', ctx->name.len);
 
     /*
      * ctx->stream holds initial part of stream file path

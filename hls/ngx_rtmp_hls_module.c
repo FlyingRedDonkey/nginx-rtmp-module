@@ -1584,7 +1584,7 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
 
     *ngx_cpymem(ctx->name.data, v->name, ctx->name.len) = 0;
 
-    len = hacf->path.len + 1 + ctx->name.len + 1 +sizeof('manifest') + sizeof(".m3u8");
+    len = hacf->path.len + 1 + ctx->name.len + 1 +sizeof("manifest") + sizeof(".m3u8");
     if (hacf->nested) {
         len += sizeof("/manifest") - 1;
     }
@@ -1596,13 +1596,13 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
         *p++ = '/';
     }
 
-    p = ngx_cpymem(ctx->playlist.data, ctx->name.data, ctx->name.len);
+    p = ngx_cpymem(p, ctx->name.data, ctx->name.len);
 
     if (p[-1] != '/') {
         *p++ = '/';
     }
 
-    p = ngx_cpymem(p, 'manifest', ctx->name.len);
+    p = ngx_cpymem(p, "manifest", sizeof("manifest"));
 
     /*
      * ctx->stream holds initial part of stream file path
@@ -1617,7 +1617,10 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
 
     ngx_memcpy(ctx->stream.data, ctx->playlist.data, ctx->stream.len - 1);
     ctx->stream.data[ctx->stream.len - 1] = (hacf->nested ? '/' : '-');
-
+    ngx_log_error(NGX_LOG_ERR, s->connection->log, 0,
+                          "ngx_rtmp_hls_publish: playlist.data '%s'", ctx->playlist.data);
+    ngx_log_error(NGX_LOG_ERR, s->connection->log, 0,
+                          "ngx_rtmp_hls_publish: playlist.data '%s'", ctx->stream.data);
     /* varint playlist path */
 
     if (hacf->variant) {
@@ -1663,7 +1666,7 @@ ngx_rtmp_hls_publish(ngx_rtmp_session_t *s, ngx_rtmp_publish_t *v)
     /* playlist path */
 
     if (hacf->nested) {
-        p = ngx_cpymem(p, "/manifest.m3u8", sizeof("/manifest.m3u8") - 1);
+        p = ngx_cpymem(p, "/index.m3u8", sizeof("/index.m3u8") - 1);
     } else {
         p = ngx_cpymem(p, ".m3u8", sizeof(".m3u8") - 1);
     }
